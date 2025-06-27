@@ -1,164 +1,114 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>長照費用簡易試算</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 0;
-      color: #333;
+      background: #f4f4f4;
+      padding: 20px;
     }
     .container {
-      max-width: 720px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 24px;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     h2 {
-      color: #005BAC;
+      color: #004b97;
     }
     label {
-      font-weight: bold;
-      margin-top: 12px;
       display: block;
+      margin-top: 15px;
     }
     input, select {
       width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 5px;
     }
-    .result {
-      background: #e7f7ed;
-      padding: 16px;
-      border-left: 6px solid #28a745;
+    button {
       margin-top: 20px;
-      border-radius: 8px;
-    }
-    .contact {
-      margin-top: 30px;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-    }
-    .btn {
-      margin-top: 20px;
-      padding: 10px 16px;
-      background: #28a745;
-      color: #fff;
+      padding: 12px;
+      width: 100%;
+      background: #007b5e;
+      color: white;
+      font-size: 16px;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
       cursor: pointer;
     }
-    .btn:disabled {
-      background: #ccc;
-    }
-    .line-btn {
-      background: #00c300;
-      display: inline-block;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      text-decoration: none;
-      margin-top: 12px;
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f5e9;
+      border-left: 5px solid #2e7d32;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>📅 照顧費用簡易試算</h2>
-
-    <label>您的姓名：</label>
-    <input type="text" id="name" placeholder="請輸入您的姓名" />
-
-    <label>連絡電話：</label>
-    <input type="text" id="phone" placeholder="請輸入電話" />
-
-    <label>預估照顧年數：</label>
-    <input type="number" id="years" placeholder="例如：5" />
-
-    <label>每月照顧方式費用：</label>
-    <select id="baseExpense">
-      <option value="10000">👨‍👩‍👧‍👦 自行照顧（約 10,000）</option>
-      <option value="30000">🏠 居家照服員（約 30,000）</option>
-      <option value="40000">🏥 安養機構（約 40,000）</option>
-    </select>
-
-    <label>醫療耗材（月）：</label>
-    <input type="number" id="med" value="3000" />
-
-    <label>營養補品（月）：</label>
-    <input type="number" id="food" value="2000" />
-
-    <button class="btn" onclick="calculate()">開始試算</button>
-
-    <div class="result" id="result" style="display:none"></div>
-
-    <div class="contact">
-      <h3>南山人壽 張又仁</h3>
-      <p>LINE ID：@731bpjaj<br>📞 0927-779-159</p>
-      <a href="https://lin.ee/qQa1RAV" class="line-btn">LINE 加入好友</a>
-      <p>📌 如需協助了解長照保險規劃，歡迎聯繫我</p>
-    </div>
+    <label>您的姓名：
+      <input type="text" id="name" required>
+    </label>
+    <label>聯絡電話：
+      <input type="text" id="phone" required>
+    </label>
+    <label>預估照顧年數：
+      <input type="number" id="year" value="5" required>
+    </label>
+    <label>每月照顧方式費用：
+      <select id="cost">
+        <option value="10000">🧑‍🦽 自行照顧（約 10,000）</option>
+        <option value="20000">👵 聘請看護（約 20,000）</option>
+        <option value="40000">🏥 安養機構（約 40,000）</option>
+      </select>
+    </label>
+    <label>醫療耗材（月）：
+      <input type="number" id="supply" value="3000">
+    </label>
+    <label>營養補品（月）：
+      <input type="number" id="nutrition" value="2000">
+    </label>
+    <button onclick="calculate()">開始試算</button>
+    <div id="result" class="result" style="display:none;"></div>
   </div>
 
   <script>
-    function calculate() {
-      const name = document.getElementById("name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const years = parseFloat(document.getElementById("years").value);
-      const base = parseFloat(document.getElementById("baseExpense").value);
-      const med = parseFloat(document.getElementById("med").value);
-      const food = parseFloat(document.getElementById("food").value);
+    async function calculate() {
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const year = parseFloat(document.getElementById("year").value);
+      const cost = parseFloat(document.getElementById("cost").value);
+      const supply = parseFloat(document.getElementById("supply").value);
+      const nutrition = parseFloat(document.getElementById("nutrition").value);
+      const total = (cost + supply + nutrition) * 12 * year;
 
-      if (!name || !phone || isNaN(years)) {
-        alert("請輸入完整資訊");
-        return;
-      }
-
-      const totalMonthly = base + med + food;
-      const total = totalMonthly * 12 * years;
-
-      const resultHTML = `
-        <h3>試算結果</h3>
-        <p>每月總照顧費用：約 <strong>NT$ ${totalMonthly.toLocaleString()}</strong></p>
-        <p>照顧 ${years} 年的總費用：約 <strong>NT$ ${total.toLocaleString()}</strong></p>
-        <p>✅ 有長照險當後盾，這些費用就不再是家人一肩扛起！</p>
+      const result = `
+        🧮 <strong>預估總照顧費用：</strong><br>
+        💰 (${cost} + ${supply} + ${nutrition}) × 12 × ${year} 年<br><br>
+        ✅ 約 <strong>${total.toLocaleString()}</strong> 元
       `;
-      document.getElementById("result").innerHTML = resultHTML;
+
+      document.getElementById("result").innerHTML = result;
       document.getElementById("result").style.display = "block";
 
-      // 傳送資料
-      const url = "https://script.google.com/macros/s/AKfycbxve6DfYiwtKo9fCtPPKOFml5JCtfKBm67kH8ljPFS4thW3XCRE8bZP2U_wBXIjJN42/exec";
-
-      const payload = {
-        type: "longterm",
-        name,
-        phone,
-        age: "", // 目前頁面無輸入，可留空
-        coveredYears: years,
-        expensePerMonth: totalMonthly,
-        estimateCost: total
-      };
-
-      fetch(url, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(res => res.text())
-      .then(msg => console.log("✅ 已送出資料", msg))
-      .catch(err => console.error("❌ 發送失敗", err));
+      // 送資料到 Apps Script
+      try {
+        await fetch("https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ type: "longterm", name, phone, year, cost, supply, nutrition })
+        });
+      } catch (err) {
+        alert("⚠️ 資料儲存失敗：" + err);
+      }
     }
   </script>
 </body>

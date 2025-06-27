@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>長照費用預估 × 照顧者試算工具</title>
+  <title>長照費用預估 × 提早準備安心守護</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
-      background: #f9f9f9;
+      background: #f5f5f5;
       color: #333;
       margin: 0;
       padding: 0;
@@ -19,23 +19,23 @@
     }
     h1 {
       text-align: center;
-      color: #00695c;
-      margin-top: 30px;
-      margin-bottom: 20px;
+      color: #00796b;
+      font-size: 26px;
+      margin: 30px 0;
     }
     .section {
       background: #fff;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
       margin-bottom: 30px;
     }
     label {
-      display: block;
-      margin-top: 1.2em;
       font-weight: bold;
+      margin-top: 1.2em;
+      display: block;
     }
-    input, select {
+    input {
       padding: 10px;
       width: 100%;
       margin-top: 6px;
@@ -49,11 +49,10 @@
       border-radius: 8px;
       margin-top: 20px;
       font-size: 18px;
-      line-height: 1.8;
+      line-height: 1.6;
     }
     button {
-      display: block;
-      margin: 30px auto 10px auto;
+      margin-top: 30px;
       padding: 12px 28px;
       background: #00796b;
       color: white;
@@ -63,127 +62,103 @@
       cursor: pointer;
     }
     button:hover {
-      background: #004d40;
+      background: #005b4f;
     }
-    .contact {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 16px;
+    .story {
+      background: #fff8e1;
+      padding: 20px;
+      border-left: 6px solid #ffc107;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .story blockquote {
       color: #555;
-    }
-    .contact strong {
-      display: block;
-      margin: 10px 0 4px 0;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <h1>長照費用預估 × 提早準備安心守護</h1>
 
-    <!-- 磊哥故事區 -->
-    <div style="background:#fff8e1; padding:20px; border-left:6px solid #ffc107; border-radius:10px; margin-bottom:24px;">
+    <div class="story">
       <h3>📌【照顧媽媽9年，他靠這個撐下去】</h3>
       <p>還記得《麻辣鮮師》的謝祖武（磊哥）嗎？<br>
       他最近在一場活動中分享了照顧失智母親9年的親身經歷，讓很多人聽完都紅了眼眶…</p>
-      <p>他說，媽媽失智後分三階段：</p>
+      <p>他說，媽媽失智後他把9年分成三階段：</p>
       <ul>
-        <li>🔹 前3年每月約花 <strong>3萬元</strong></li>
-        <li>🔹 中間3年每月約 <strong>5萬元</strong></li>
-        <li>🔹 後3年甚至高達 <strong>8～10萬元</strong></li>
+        <li>🔹 前3年每月約花3萬元</li>
+        <li>🔹 中間3年每月約5萬</li>
+        <li>🔹 後3年甚至高達8～10萬／月</li>
       </ul>
       <p>👉「這還不是天花板，一場突發住院費用真的會讓人措手不及。」</p>
-      <blockquote style="color:#555; font-style:italic;">💬「照顧者，其實比被照顧的人更需要被照顧。」</blockquote>
-      <p>他和全家三口都及早準備了長照保險，<br>這不只是保障，更是對未來的負責。</p>
+      <blockquote>「照顧者，其實比被照顧的人更需要被照顧。」</blockquote>
+      <p>為了不讓家人承受同樣壓力，<br>他和全家三口都及早準備了長照險。這不只是保障，更是對未來的負責。</p>
     </div>
 
-    <!-- 痛點引導區 -->
-    <div class="section" style="background:#fff3e0; border-left:6px solid #ff9800;">
-      <h3>💡你是否也有這些擔憂？</h3>
-      <ul>
-        <li>🔸 父母若失能，照顧費從哪裡來？</li>
-        <li>🔸 外籍看護每月 3～6 萬，萬一照顧 10 年呢？</li>
-        <li>🔸 沒人幫忙輪班？照顧會壓垮自己？</li>
-        <li>🔸 若今天突然倒下或住院，有準備好嗎？</li>
-      </ul>
-      <p>👉 現在就來試算看看，長照你應該準備多少？</p>
-    </div>
+    <form id="ltcForm">
+      <div class="section">
+        <label>預估需要照顧幾年？</label>
+        <input type="number" name="coveredYears" id="coveredYears" min="1" required />
 
-    <!-- 試算表單 -->
-    <form id="calcForm" class="section">
-      <h1>長照費用預估試算</h1>
+        <label>每月長照支出（元）</label>
+        <input type="number" name="expensePerMonth" id="expensePerMonth" min="0" required />
 
-      <label>每月預估照顧費用（元）</label>
-      <input type="number" name="monthly_cost" id="monthlyCost" required placeholder="建議填入30000～80000" />
+        <div class="result" id="result">
+          🧓 請輸入照顧年期與預估支出進行試算。
+        </div>
 
-      <label>預估照顧年數</label>
-      <input type="number" name="years" id="years" required placeholder="例如 9 年" />
+        <label>您的姓名</label>
+        <input type="text" name="name" required />
 
-      <label>您的姓名</label>
-      <input type="text" name="name" required />
+        <label>您的電話</label>
+        <input type="tel" name="phone" required />
 
-      <label>電話</label>
-      <input type="tel" name="phone" required />
+        <input type="hidden" name="estimateCost" id="estimateCost" />
 
-      <label>LINE ID（可選填）</label>
-      <input type="text" name="line" />
-
-      <input type="hidden" name="result_text" id="resultText" />
-
-      <div class="result" id="result">
-        📊 請輸入上方資料後進行試算
+        <button type="submit">立即試算</button>
       </div>
-
-      <button type="submit">立即試算</button>
     </form>
 
-    <!-- 行動呼籲 -->
-    <div class="contact">
-      <p>📞 想了解如何準備長照保障，歡迎聯絡我</p>
-      <strong>南山人壽 張又仁</strong>
-      <p>LINE ID：@731bpjaj　｜　電話：0927-779-159</p>
+    <div style="text-align:center; margin-top:40px; font-size:16px;">
+      <p>📞 如需協助了解長照險規劃或保障設計，歡迎聯絡我</p>
+      <strong>南山人壽 張又仁</strong><br>
+      LINE ID：@731bpjaj ｜ 電話：0927-779-159<br>
       <a href="https://lin.ee/qQa1RAV" target="_blank">
         <img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" height="40" border="0">
       </a>
     </div>
   </div>
 
-  <!-- JS 試算與送出 -->
   <script>
-    function calculate() {
-      const monthly = parseInt(document.getElementById("monthlyCost").value || 0);
-      const years = parseInt(document.getElementById("years").value || 0);
-      const total = monthly * 12 * years;
-
-      const text = `
-📊 長照費用預估結果：<br>
-每月約 ${monthly.toLocaleString()} 元 × ${years} 年<br>
-＝ 預估總費用 <strong>${total.toLocaleString()}</strong> 元<br><br>
-💬 若不提早準備，照顧壓力最終可能落在你身上。
-`;
-
-      document.getElementById("result").innerHTML = text;
-      document.getElementById("resultText").value = text.replace(/<br>/g, '\n');
-    }
-
-    document.getElementById("calcForm").addEventListener("submit", function (e) {
+    document.getElementById("ltcForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      calculate();
+
+      const years = parseFloat(document.getElementById("coveredYears").value);
+      const monthly = parseFloat(document.getElementById("expensePerMonth").value);
+      const total = years * monthly * 12;
+
+      const resultText = `📊 長照預估費用試算結果：<br>
+🧓 ${years} 年 × 每月 ${monthly.toLocaleString()} 元 × 12 個月<br>
+➡️ 預估總支出：約 <strong>${total.toLocaleString()}</strong> 元`;
+
+      document.getElementById("result").innerHTML = resultText;
+      document.getElementById("estimateCost").value = total;
 
       const form = e.target;
-      const data = new URLSearchParams(new FormData(form));
+      const formData = new FormData(form);
 
       fetch("https://script.google.com/macros/s/AKfycbwYlfYN6625eTGnDqzSHgfXNmEHNU_fkb7oPMF7xdiu9qakZwZoIF3UUj1TDcmUjsXQ/exec", {
         method: "POST",
-        body: data,
+        body: formData
       })
       .then(res => res.text())
-      .then(text => {
-        document.getElementById("result").innerHTML += "<br><br>✅ 試算結果已送出，我會與您聯繫協助說明。";
+      .then(res => {
+        document.getElementById("result").innerHTML += "<br><br>✅ 試算完成，建議盡早準備長照保障！";
         form.reset();
       })
       .catch(err => {
-        document.getElementById("result").innerHTML += "<br><br>❌ 發生錯誤，請稍後再試！";
-        console.error(err);
+        document.getElementById("result").innerHTML += "<br><br>❌ 發生錯誤，請稍後再試。";
       });
     });
   </script>

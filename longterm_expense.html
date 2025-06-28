@@ -2,171 +2,79 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>家庭收支分析 × 保險保障建議</title>
+  <title>收入分配分析工具</title>
   <style>
-    body {
-      font-family: "Microsoft JhengHei", sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-
-    .container {
-      max-width: 720px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-radius: 12px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    label {
-      display: block;
-      margin-top: 16px;
-      font-weight: bold;
-    }
-
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 4px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    button {
-      margin-top: 24px;
-      width: 100%;
-      padding: 14px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #218838;
-    }
-
-    .result-box {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f1f9f1;
-      border-left: 6px solid #28a745;
-      border-radius: 8px;
-      display: none;
-    }
-
-    .result-box p {
-      margin: 8px 0;
-      font-size: 16px;
-    }
-
-    .contact {
-      margin-top: 20px;
-      font-size: 15px;
-      line-height: 1.6;
-    }
+    body { font-family: 'Microsoft JhengHei', sans-serif; background: #f7f7f7; padding: 20px; color: #333; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    h2 { text-align: center; color: #007b8f; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
+    input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-top: 20px; width: 100%; padding: 10px; background: #007b8f; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    #result { margin-top: 24px; background: #fffbe6; padding: 16px; border-left: 6px solid #ffc107; border-radius: 8px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📊 家庭收支試算</h1>
-    <form id="calcForm" method="POST" target="hidden_iframe"
-      action="https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec">
-      <label>姓名</label>
-      <input type="text" name="name" id="name" required />
+    <h2>📊 收入分配分析</h2>
+    <form id="budgetForm">
+      <label>每月總收入</label>
+      <input type="number" id="income" required />
 
-      <label>電話</label>
-      <input type="text" name="phone" id="phone" required />
+      <label>生活開銷（餐飲、房租、交通…）</label>
+      <input type="number" id="life" required />
 
-      <label>收入（元）</label>
-      <input type="number" name="income" id="income" required />
+      <label>債務支出（房貸、卡債、孝親費…）</label>
+      <input type="number" id="debt" required />
 
-      <label>生活開銷（元）</label>
-      <input type="number" name="expense" id="expense" required />
+      <label>風險管理（保險、預備金）</label>
+      <input type="number" id="risk" required />
 
-      <label>負債支出（元）</label>
-      <input type="number" name="debt" id="debt" required />
+      <label>投資理財（保本、中高風險…）</label>
+      <input type="number" id="invest" required />
 
-      <label>風險管理支出（元）</label>
-      <input type="number" name="insurance" id="insurance" required />
-
-      <label>投資理財支出（元）</label>
-      <input type="number" name="investment" id="investment" required />
-
-      <input type="hidden" name="type" value="budget">
-      <input type="hidden" name="total" id="total">
-      <input type="hidden" name="surplus" id="surplus">
-      <input type="hidden" name="saving_rate" id="saving_rate">
-      <input type="hidden" name="grade" id="grade">
-
-      <button type="submit" onclick="calculate()">✅ 送出並顯示結果</button>
+      <button type="submit">分析分配</button>
     </form>
 
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
-
-    <div id="result" class="result-box">
-      <p id="result_total"></p>
-      <p id="result_surplus"></p>
-      <p id="result_rate"></p>
-      <p id="result_grade"></p>
-
-      <hr style="margin: 20px 0;">
-
-      <div class="contact">
-        📞 如需協助規劃保單、財務建議或補助試算，歡迎聯絡我：<br>
-        👤 顧問：南山人壽 張又仁<br>
-        ☎ 電話：0927-779-159<br>
-        💬 LINE：<a href="https://lin.ee/qQa1RAV" target="_blank">@731bpjaj</a><br>
-        <a href="https://lin.ee/qQa1RAV" target="_blank">
-          <img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" height="36" border="0" alt="加入好友">
-        </a>
-      </div>
-    </div>
+    <div id="result"></div>
   </div>
 
   <script>
-    function calculate() {
-      const income = Number(document.getElementById("income").value) || 0;
-      const expense = Number(document.getElementById("expense").value) || 0;
-      const debt = Number(document.getElementById("debt").value) || 0;
-      const insurance = Number(document.getElementById("insurance").value) || 0;
-      const investment = Number(document.getElementById("investment").value) || 0;
+    document.getElementById("budgetForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-      const total = expense + debt + insurance + investment;
-      const surplus = income - total;
-      const savingRate = income > 0 ? (surplus / income) * 100 : 0;
+      const income = +document.getElementById("income").value;
+      const life = +document.getElementById("life").value;
+      const debt = +document.getElementById("debt").value;
+      const risk = +document.getElementById("risk").value;
+      const invest = +document.getElementById("invest").value;
 
-      let grade = "";
-      if (savingRate >= 30) grade = "A";
-      else if (savingRate >= 10) grade = "B";
-      else grade = "C";
+      const total = life + debt + risk + invest;
 
-      // 顯示結果
-      document.getElementById("result").style.display = "block";
-      document.getElementById("result_total").innerText = `💸 總支出：${total.toLocaleString()} 元`;
-      document.getElementById("result_surplus").innerText = `📊 結餘：${surplus.toLocaleString()} 元`;
-      document.getElementById("result_rate").innerText = `📈 儲蓄率：${savingRate.toFixed(1)}%`;
-      document.getElementById("result_grade").innerText = `📣 評級：${grade}（資料已儲存）`;
+      function calcRate(val) {
+        return Math.round(val / income * 100);
+      }
 
-      // 設定隱藏欄位
-      document.getElementById("total").value = total;
-      document.getElementById("surplus").value = surplus;
-      document.getElementById("saving_rate").value = savingRate.toFixed(1) + "%";
-      document.getElementById("grade").value = grade;
-    }
+      function evaluate(val, ideal) {
+        if (val > ideal + 5) return "偏高";
+        if (val < ideal - 5) return "偏低";
+        return "正常";
+      }
+
+      const lifeRate = calcRate(life);
+      const debtRate = calcRate(debt);
+      const riskRate = calcRate(risk);
+      const investRate = calcRate(invest);
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `
+        ✅ 收入總額：${income.toLocaleString()} 元<br><br>
+        🔹 生活開銷：${lifeRate}%（建議 40%）👉 ${evaluate(lifeRate, 40)}<br>
+        🔹 債務支出：${debtRate}%（建議 20%）👉 ${evaluate(debtRate, 20)}<br>
+        🔹 風險管理：${riskRate}%（建議 20%）👉 ${evaluate(riskRate, 20)}<br>
+        🔹 投資理財：${investRate}%（建議 20%）👉 ${evaluate(investRate, 20)}<br><br>
+        ${total > income ? "⚠️ 支出超過收入，建議調整！" : "👍 分配合理，可進一步優化配置"}
+      `;
+    });
   </script>
 </body>
 </html>

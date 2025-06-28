@@ -25,7 +25,6 @@
     h1 {
       text-align: center;
       margin-bottom: 24px;
-      color: #007b8f;
     }
 
     label {
@@ -37,22 +36,22 @@
     input[type="text"], input[type="number"] {
       width: 100%;
       padding: 10px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
       font-size: 16px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
     button {
-      display: block;
-      width: 100%;
-      padding: 12px;
       margin-top: 24px;
+      width: 100%;
+      padding: 14px;
       background-color: #28a745;
       color: white;
-      font-size: 18px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
     }
 
@@ -61,85 +60,112 @@
     }
 
     .result-box {
-      background: #eafaf1;
+      margin-top: 30px;
+      padding: 20px;
+      background: #f1f9f1;
       border-left: 6px solid #28a745;
-      padding: 16px;
-      margin-top: 24px;
       border-radius: 8px;
+      display: none;
     }
 
-    .footer {
-      margin-top: 36px;
+    .result-box p {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    .contact {
+      margin-top: 20px;
       font-size: 15px;
-      text-align: center;
-      color: #666;
-    }
-
-    .footer a {
-      color: #007b8f;
-      text-decoration: none;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📊 家庭收支分析</h1>
+    <h1>📊 家庭收支試算</h1>
+    <form id="calcForm" method="POST" target="hidden_iframe"
+      action="https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec">
+      <label>姓名</label>
+      <input type="text" name="name" id="name" required />
 
-    <form id="calcForm"
-      action="https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec"
-      method="POST"
-      target="hidden_iframe"
-      onsubmit="showResult();">
+      <label>電話</label>
+      <input type="text" name="phone" id="phone" required />
 
-      <input type="hidden" name="type" value="budget" />
-      
-      <label>姓名：
-        <input type="text" name="name" required>
-      </label>
+      <label>收入（元）</label>
+      <input type="number" name="income" id="income" required />
 
-      <label>電話：
-        <input type="text" name="phone">
-      </label>
+      <label>生活開銷（元）</label>
+      <input type="number" name="expense" id="expense" required />
 
-      <label>每月收入（元）：
-        <input type="number" name="income" required>
-      </label>
+      <label>負債支出（元）</label>
+      <input type="number" name="debt" id="debt" required />
 
-      <label>每月生活支出（元）：
-        <input type="number" name="expense" required>
-      </label>
+      <label>風險管理支出（元）</label>
+      <input type="number" name="insurance" id="insurance" required />
 
-      <label>儲蓄評級（選填，如 A / B / C）：
-        <input type="text" name="grade">
-      </label>
+      <label>投資理財支出（元）</label>
+      <input type="number" name="investment" id="investment" required />
 
-      <button type="submit">✅ 送出並顯示結果</button>
+      <input type="hidden" name="type" value="budget">
+      <input type="hidden" name="total" id="total">
+      <input type="hidden" name="surplus" id="surplus">
+      <input type="hidden" name="saving_rate" id="saving_rate">
+      <input type="hidden" name="grade" id="grade">
+
+      <button type="submit" onclick="calculate()">✅ 送出並顯示結果</button>
     </form>
 
     <iframe name="hidden_iframe" style="display:none;"></iframe>
 
-    <div class="result-box" id="submittedBox" style="display:none;">
-      ✅ 您的家庭收支資料已成功送出！<br>建議您可與我們討論進一步的理財與保障安排 😊
-    </div>
+    <div id="result" class="result-box">
+      <p id="result_total"></p>
+      <p id="result_surplus"></p>
+      <p id="result_rate"></p>
+      <p id="result_grade"></p>
 
-    <div class="footer">
-      如需協助財務健診與保障建議，歡迎聯絡我：<br>
-      顧問：南山人壽 張又仁<br>
-      📞 電話：0927-779-159<br>
-      📱 LINE ID：<a href="https://lin.ee/qQa1RAV" target="_blank">@731bpjaj</a>
+      <hr style="margin: 20px 0;">
+
+      <div class="contact">
+        📞 如需協助規劃保單、財務建議或補助試算，歡迎聯絡我：<br>
+        👤 顧問：南山人壽 張又仁<br>
+        ☎ 電話：0927-779-159<br>
+        💬 LINE：<a href="https://lin.ee/qQa1RAV" target="_blank">@731bpjaj</a><br>
+        <a href="https://lin.ee/qQa1RAV" target="_blank">
+          <img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" height="36" border="0" alt="加入好友">
+        </a>
+      </div>
     </div>
   </div>
 
   <script>
-    function showResult() {
-      setTimeout(() => {
-        document.getElementById("submittedBox").style.display = "block";
-        document.getElementById("calcForm").reset();
-      }, 500);
+    function calculate() {
+      const income = Number(document.getElementById("income").value) || 0;
+      const expense = Number(document.getElementById("expense").value) || 0;
+      const debt = Number(document.getElementById("debt").value) || 0;
+      const insurance = Number(document.getElementById("insurance").value) || 0;
+      const investment = Number(document.getElementById("investment").value) || 0;
+
+      const total = expense + debt + insurance + investment;
+      const surplus = income - total;
+      const savingRate = income > 0 ? (surplus / income) * 100 : 0;
+
+      let grade = "";
+      if (savingRate >= 30) grade = "A";
+      else if (savingRate >= 10) grade = "B";
+      else grade = "C";
+
+      // 顯示結果
+      document.getElementById("result").style.display = "block";
+      document.getElementById("result_total").innerText = `💸 總支出：${total.toLocaleString()} 元`;
+      document.getElementById("result_surplus").innerText = `📊 結餘：${surplus.toLocaleString()} 元`;
+      document.getElementById("result_rate").innerText = `📈 儲蓄率：${savingRate.toFixed(1)}%`;
+      document.getElementById("result_grade").innerText = `📣 評級：${grade}（資料已儲存）`;
+
+      // 設定隱藏欄位
+      document.getElementById("total").value = total;
+      document.getElementById("surplus").value = surplus;
+      document.getElementById("saving_rate").value = savingRate.toFixed(1) + "%";
+      document.getElementById("grade").value = grade;
     }
   </script>
 </body>

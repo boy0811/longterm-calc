@@ -29,131 +29,137 @@
       margin-top: 16px;
       font-weight: bold;
     }
-    input[type="text"], input[type="number"] {
+    input[type="number"], input[type="text"] {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
+      padding: 8px;
       margin-top: 4px;
-      border-radius: 6px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
+      border-radius: 6px;
     }
     button {
       margin-top: 24px;
+      padding: 12px;
       width: 100%;
-      padding: 14px;
-      background-color: #28a745;
+      font-size: 16px;
+      background-color: #007b8f;
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #218838;
-    }
-    .result-box {
-      margin-top: 30px;
+    #result {
+      margin-top: 32px;
+      background: #f1f8e9;
       padding: 20px;
-      background: #f1f9f1;
-      border-left: 6px solid #28a745;
+      border-left: 6px solid #8bc34a;
       border-radius: 8px;
-      display: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📊 家庭收支試算</h1>
+    <h1>家庭收支分析 × 保險建議</h1>
     <form id="budgetForm">
-      <label>姓名</label>
-      <input type="text" id="name" required />
+      <label>姓名 *</label>
+      <input type="text" name="name" required />
 
-      <label>電話</label>
-      <input type="text" id="phone" required />
+      <label>電話 *</label>
+      <input type="text" name="phone" required />
 
       <label>LINE ID（可免填）</label>
-      <input type="text" id="lineid" />
+      <input type="text" name="lineId" />
 
-      <label>收入（元）</label>
+      <label>每月總收入（元）</label>
       <input type="number" id="income" required />
 
-      <label>生活開銷（元）</label>
+      <label>每月生活開銷（元）</label>
       <input type="number" id="expense" required />
 
-      <label>債務支出（元）</label>
+      <label>每月債務支出（元）</label>
       <input type="number" id="debt" required />
 
-      <label>風險管理支出（元）</label>
+      <label>每月風險管理（保險）支出（元）</label>
       <input type="number" id="insurance" required />
 
-      <label>投資理財支出（元）</label>
-      <input type="number" id="investment" required />
+      <label>每月投資理財支出（元）</label>
+      <input type="number" id="invest" required />
 
-      <button type="submit">✅ 送出並顯示結果</button>
+      <button type="submit">📊 立即分析</button>
     </form>
 
-    <div id="result" class="result-box"></div>
+    <div id="result"></div>
   </div>
 
   <script>
+    function remark(actual, target, low, high) {
+      if (actual < target * 0.9) return "👉 " + low;
+      if (actual > target * 1.1) return "👉 " + high;
+      return "✅ 合理";
+    }
+
     document.getElementById("budgetForm").addEventListener("submit", function(e) {
       e.preventDefault();
-
-      const name = document.getElementById("name").value;
-      const phone = document.getElementById("phone").value;
-      const lineid = document.getElementById("lineid").value || "";
       const income = +document.getElementById("income").value;
       const expense = +document.getElementById("expense").value;
       const debt = +document.getElementById("debt").value;
       const insurance = +document.getElementById("insurance").value;
-      const investment = +document.getElementById("investment").value;
+      const invest = +document.getElementById("invest").value;
 
-      const total = expense + debt + insurance + investment;
-      const surplus = income - total;
-      const savingRate = income > 0 ? (surplus / income) * 100 : 0;
+      const name = document.querySelector("input[name='name']").value;
+      const phone = document.querySelector("input[name='phone']").value;
+      const lineId = document.querySelector("input[name='lineId']").value;
 
-      function evaluate(label, percent, recommended) {
-        if (label === "債務支出" && percent < recommended) return "✅ 無負擔（良好）";
-        if (percent < recommended * 0.5) return "⚠️ 偏低";
-        if (percent > recommended * 1.5) return "⚠️ 偏高";
-        return "✅ 合理";
-      }
+      const totalSpending = expense + debt + insurance + invest;
+      const saving = income - totalSpending;
+      const savingP = Math.round((saving / income) * 100);
 
-      const grade = savingRate >= 30 ? "A" : savingRate >= 10 ? "B" : "C";
+      const expenseP = Math.round((expense / income) * 100);
+      const debtP = Math.round((debt / income) * 100);
+      const insuranceP = Math.round((insurance / income) * 100);
+      const investP = Math.round((invest / income) * 100);
 
-      const resultBox = document.getElementById("result");
-      resultBox.innerHTML = `
+      const grade = savingP >= 20 ? "A" : savingP >= 10 ? "B" : "C";
+
+      const resultHTML = `
         ✅ 收入總額：${income.toLocaleString()} 元<br><br>
-        🔹 生活開銷：${((expense / income) * 100).toFixed(1)}%（建議 40%）👉 ${evaluate("生活開銷", (expense / income) * 100, 40)}<br>
-        🔹 債務支出：${((debt / income) * 100).toFixed(1)}%（建議 20%）👉 ${evaluate("債務支出", (debt / income) * 100, 20)}<br>
-        🔹 風險管理：${((insurance / income) * 100).toFixed(1)}%（建議 20%）👉 ${evaluate("風險管理", (insurance / income) * 100, 20)}<br>
-        🔹 投資理財：${((investment / income) * 100).toFixed(1)}%（建議 20%）👉 ${evaluate("投資理財", (investment / income) * 100, 20)}<br><br>
-        💸 總支出：${total.toLocaleString()} 元<br>
-        📊 結餘：${surplus.toLocaleString()} 元<br>
-        📈 儲蓄率：${savingRate.toFixed(1)}%<br>
-        📣 評級：${grade} 級（${grade === "A" ? "非常健康" : grade === "B" ? "尚可" : "建議改善"}）
-      `;
-      resultBox.style.display = "block";
+        🔹 生活開銷：${expenseP}%（建議 40%）${remark(expenseP, 40, "偏低", "偏高")}<br>
+        🔹 債務支出：${debtP}%（建議 20%）${debt === 0 ? "✅ 無債務，良好" : remark(debtP, 20, "偏低", "偏高")}<br>
+        🔹 風險管理：${insuranceP}%（建議 20%）${remark(insuranceP, 20, "偏低", "偏高")}<br>
+        🔹 投資理財：${investP}%（建議 20%）${invest === 0 ? "👉 尚未配置" : remark(investP, 20, "偏低", "偏高")}<br><br>
+        💰 預估儲蓄額：${saving.toLocaleString()} 元／月（約 ${savingP}%）<br><br>
+        📣 評級：${grade}（資料已儲存）<br><br>
+        👤 填寫者資訊：<br>
+        姓名：${name}<br>
+        電話：${phone}<br>
+        ${lineId ? `LINE ID：${lineId}<br>` : ""}<br><br>
 
+        📞 如需協助規劃保單、財務建議或補助試算，歡迎聯絡我：<br>
+        👤 顧問：南山人壽 張又仁<br>
+        ☎ 電話：0927-779-159<br>
+        💬 LINE：@731bpjaj<br>
+        <a href="https://lin.ee/qQa1RAV" target="_blank">
+          <img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="36" border="0">
+        </a>
+      `;
+
+      document.getElementById("result").innerHTML = resultHTML;
+
+      // ✅ 寫入 Google 試算表
       fetch("https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "budget",
           name,
           phone,
-          lineid,
+          lineId,
           income,
           expense,
           debt,
           insurance,
-          investment,
-          total,
-          surplus,
-          savingRate: savingRate.toFixed(1) + "%",
+          invest,
+          saving,
+          savingP,
           grade
         })
       });

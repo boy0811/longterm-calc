@@ -2,78 +2,161 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>收入分配分析工具</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>家庭收支分析 × 保險建議</title>
   <style>
-    body { font-family: 'Microsoft JhengHei', sans-serif; background: #f7f7f7; padding: 20px; color: #333; }
-    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
-    h2 { text-align: center; color: #007b8f; }
-    label { display: block; margin-top: 12px; font-weight: bold; }
-    input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 6px; }
-    button { margin-top: 20px; width: 100%; padding: 10px; background: #007b8f; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
-    #result { margin-top: 24px; background: #fffbe6; padding: 16px; border-left: 6px solid #ffc107; border-radius: 8px; }
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 24px;
+      width: 100%;
+      padding: 14px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .result-box {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f1f9f1;
+      border-left: 6px solid #28a745;
+      border-radius: 8px;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>📊 收入分配分析</h2>
+    <h1>📊 家庭收支試算</h1>
     <form id="budgetForm">
-      <label>每月總收入</label>
+      <label>姓名</label>
+      <input type="text" id="name" required />
+
+      <label>電話</label>
+      <input type="text" id="phone" required />
+
+      <label>LINE ID（可免填）</label>
+      <input type="text" id="lineid" />
+
+      <label>收入（元）</label>
       <input type="number" id="income" required />
 
-      <label>生活開銷（餐飲、房租、交通…）</label>
-      <input type="number" id="life" required />
+      <label>生活開銷（元）</label>
+      <input type="number" id="expense" required />
 
-      <label>債務支出（房貸、卡債、孝親費…）</label>
+      <label>債務支出（元）</label>
       <input type="number" id="debt" required />
 
-      <label>風險管理（保險、預備金）</label>
-      <input type="number" id="risk" required />
+      <label>風險管理支出（元）</label>
+      <input type="number" id="insurance" required />
 
-      <label>投資理財（保本、中高風險…）</label>
-      <input type="number" id="invest" required />
+      <label>投資理財支出（元）</label>
+      <input type="number" id="investment" required />
 
-      <button type="submit">分析分配</button>
+      <button type="submit">✅ 送出並顯示結果</button>
     </form>
 
-    <div id="result"></div>
+    <div id="result" class="result-box"></div>
   </div>
 
   <script>
     document.getElementById("budgetForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const lineid = document.getElementById("lineid").value || "";
       const income = +document.getElementById("income").value;
-      const life = +document.getElementById("life").value;
+      const expense = +document.getElementById("expense").value;
       const debt = +document.getElementById("debt").value;
-      const risk = +document.getElementById("risk").value;
-      const invest = +document.getElementById("invest").value;
+      const insurance = +document.getElementById("insurance").value;
+      const investment = +document.getElementById("investment").value;
 
-      const total = life + debt + risk + invest;
+      const total = expense + debt + insurance + investment;
+      const surplus = income - total;
+      const savingRate = income > 0 ? (surplus / income) * 100 : 0;
 
-      function calcRate(val) {
-        return Math.round(val / income * 100);
+      function evaluate(label, percent, recommended) {
+        if (label === "債務支出" && percent < recommended) return "✅ 無負擔（良好）";
+        if (percent < recommended * 0.5) return "⚠️ 偏低";
+        if (percent > recommended * 1.5) return "⚠️ 偏高";
+        return "✅ 合理";
       }
 
-      function evaluate(val, ideal) {
-        if (val > ideal + 5) return "偏高";
-        if (val < ideal - 5) return "偏低";
-        return "正常";
-      }
+      const grade = savingRate >= 30 ? "A" : savingRate >= 10 ? "B" : "C";
 
-      const lifeRate = calcRate(life);
-      const debtRate = calcRate(debt);
-      const riskRate = calcRate(risk);
-      const investRate = calcRate(invest);
-
-      const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = `
+      const resultBox = document.getElementById("result");
+      resultBox.innerHTML = `
         ✅ 收入總額：${income.toLocaleString()} 元<br><br>
-        🔹 生活開銷：${lifeRate}%（建議 40%）👉 ${evaluate(lifeRate, 40)}<br>
-        🔹 債務支出：${debtRate}%（建議 20%）👉 ${evaluate(debtRate, 20)}<br>
-        🔹 風險管理：${riskRate}%（建議 20%）👉 ${evaluate(riskRate, 20)}<br>
-        🔹 投資理財：${investRate}%（建議 20%）👉 ${evaluate(investRate, 20)}<br><br>
-        ${total > income ? "⚠️ 支出超過收入，建議調整！" : "👍 分配合理，可進一步優化配置"}
+        🔹 生活開銷：${((expense / income) * 100).toFixed(1)}%（建議 40%）👉 ${evaluate("生活開銷", (expense / income) * 100, 40)}<br>
+        🔹 債務支出：${((debt / income) * 100).toFixed(1)}%（建議 20%）👉 ${evaluate("債務支出", (debt / income) * 100, 20)}<br>
+        🔹 風險管理：${((insurance / income) * 100).toFixed(1)}%（建議 20%）👉 ${evaluate("風險管理", (insurance / income) * 100, 20)}<br>
+        🔹 投資理財：${((investment / income) * 100).toFixed(1)}%（建議 20%）👉 ${evaluate("投資理財", (investment / income) * 100, 20)}<br><br>
+        💸 總支出：${total.toLocaleString()} 元<br>
+        📊 結餘：${surplus.toLocaleString()} 元<br>
+        📈 儲蓄率：${savingRate.toFixed(1)}%<br>
+        📣 評級：${grade} 級（${grade === "A" ? "非常健康" : grade === "B" ? "尚可" : "建議改善"}）
       `;
+      resultBox.style.display = "block";
+
+      fetch("https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          type: "budget",
+          name,
+          phone,
+          lineid,
+          income,
+          expense,
+          debt,
+          insurance,
+          investment,
+          total,
+          surplus,
+          savingRate: savingRate.toFixed(1) + "%",
+          grade
+        })
+      });
     });
   </script>
 </body>

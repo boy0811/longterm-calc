@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -26,6 +25,7 @@
     h1 {
       text-align: center;
       margin-bottom: 24px;
+      color: #007b8f;
     }
 
     label {
@@ -37,22 +37,22 @@
     input[type="text"], input[type="number"] {
       width: 100%;
       padding: 10px;
-      font-size: 16px;
-      margin-top: 4px;
-      border-radius: 6px;
+      margin-top: 6px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
+      border-radius: 6px;
+      font-size: 16px;
     }
 
     button {
-      margin-top: 24px;
+      display: block;
       width: 100%;
-      padding: 14px;
+      padding: 12px;
+      margin-top: 24px;
       background-color: #28a745;
       color: white;
+      font-size: 18px;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 6px;
       cursor: pointer;
     }
 
@@ -61,131 +61,86 @@
     }
 
     .result-box {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f1f9f1;
+      background: #eafaf1;
       border-left: 6px solid #28a745;
+      padding: 16px;
+      margin-top: 24px;
       border-radius: 8px;
-      display: none;
     }
 
-    .result-box p {
-      margin: 8px 0;
-      font-size: 16px;
-    }
-
-    .contact {
-      margin-top: 20px;
+    .footer {
+      margin-top: 36px;
       font-size: 15px;
-      line-height: 1.6;
+      text-align: center;
+      color: #666;
+    }
+
+    .footer a {
+      color: #007b8f;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📊 家庭收支試算</h1>
-    <form id="calcForm">
-      <label>姓名</label>
-      <input type="text" id="name" required />
+    <h1>📊 家庭收支分析</h1>
 
-      <label>電話</label>
-      <input type="text" id="phone" required />
+    <form id="calcForm"
+      action="https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec"
+      method="POST"
+      target="hidden_iframe"
+      onsubmit="showResult();">
 
-      <label>收入（元）</label>
-      <input type="number" id="income" required />
+      <input type="hidden" name="type" value="budget" />
+      
+      <label>姓名：
+        <input type="text" name="name" required>
+      </label>
 
-      <label>生活開銷（元）</label>
-      <input type="number" id="expense" required />
+      <label>電話：
+        <input type="text" name="phone">
+      </label>
 
-      <label>負債支出（元）</label>
-      <input type="number" id="debt" required />
+      <label>每月收入（元）：
+        <input type="number" name="income" required>
+      </label>
 
-      <label>風險管理支出（元）</label>
-      <input type="number" id="insurance" required />
+      <label>每月生活支出（元）：
+        <input type="number" name="expense" required>
+      </label>
 
-      <label>投資理財支出（元）</label>
-      <input type="number" id="investment" required />
+      <label>儲蓄評級（選填，如 A / B / C）：
+        <input type="text" name="grade">
+      </label>
 
       <button type="submit">✅ 送出並顯示結果</button>
     </form>
 
-    <div id="result" class="result-box">
-      <p id="result_total"></p>
-      <p id="result_surplus"></p>
-      <p id="result_rate"></p>
-      <p id="result_grade"></p>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
 
-      <hr style="margin: 20px 0;">
+    <div class="result-box" id="submittedBox" style="display:none;">
+      ✅ 您的家庭收支資料已成功送出！<br>建議您可與我們討論進一步的理財與保障安排 😊
+    </div>
 
-      <div class="contact">
-        📞 如需協助規劃保單、財務建議或補助試算，歡迎聯絡我：<br>
-        👤 顧問：南山人壽 張又仁<br>
-        ☎ 電話：0927-779-159<br>
-        💬 LINE：<a href="https://lin.ee/qQa1RAV" target="_blank">@731bpjaj</a><br>
-        <a href="https://lin.ee/qQa1RAV" target="_blank">
-          <img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" height="36" border="0" alt="加入好友">
-        </a>
-      </div>
+    <div class="footer">
+      如需協助財務健診與保障建議，歡迎聯絡我：<br>
+      顧問：南山人壽 張又仁<br>
+      📞 電話：0927-779-159<br>
+      📱 LINE ID：<a href="https://lin.ee/qQa1RAV" target="_blank">@731bpjaj</a>
     </div>
   </div>
 
   <script>
-    document.getElementById("calcForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const name = document.getElementById("name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const income = Number(document.getElementById("income").value) || 0;
-      const expense = Number(document.getElementById("expense").value) || 0;
-      const debt = Number(document.getElementById("debt").value) || 0;
-      const insurance = Number(document.getElementById("insurance").value) || 0;
-      const investment = Number(document.getElementById("investment").value) || 0;
-
-      const total = expense + debt + insurance + investment;
-      const surplus = income - total;
-      const saving_rate = income > 0 ? (surplus / income) * 100 : 0;
-
-      let grade = "";
-      if (saving_rate >= 30) grade = "A";
-      else if (saving_rate >= 10) grade = "B";
-      else grade = "C";
-
-      // 顯示分析結果
-      document.getElementById("result").style.display = "block";
-      document.getElementById("result_total").innerText = `💸 總支出：${total.toLocaleString()} 元`;
-      document.getElementById("result_surplus").innerText = `📊 結餘：${surplus.toLocaleString()} 元`;
-      document.getElementById("result_rate").innerText = `📈 儲蓄率：${saving_rate.toFixed(1)}%`;
-      document.getElementById("result_grade").innerText = `📣 評級：${grade}`;
-
-      fetch("https://script.google.com/macros/s/AKfycbxve6DfYiwtKo9fCtPPKOFml5JCtfKBm67kH8ljPFS4thW3XCRE8bZP2U_wBXIjJN42/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "budget",
-          name,
-          phone,
-          income,
-          expense,
-          debt,
-          insurance,
-          investment,
-          total,
-          surplus,
-          saving_rate: saving_rate.toFixed(1) + "%",
-          grade
-        })
-      }).then(res => res.json())
-        .then(res => {
-          if (res.result === "success") {
-            document.getElementById("result_grade").innerHTML += "<br>✅ 資料已儲存";
-          } else {
-            document.getElementById("result_grade").innerHTML += "<br>❌ 儲存失敗：" + res.message;
-          }
-        })
-        .catch(err => {
-          document.getElementById("result_grade").innerHTML += "<br>❌ 發生錯誤，請稍後再試";
-        });
-    });
+    function showResult() {
+      setTimeout(() => {
+        document.getElementById("submittedBox").style.display = "block";
+        document.getElementById("calcForm").reset();
+      }, 500);
+    }
   </script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -83,41 +84,30 @@
 <body>
   <div class="container">
     <h1>📊 家庭收支試算</h1>
-    <form id="calcForm" method="POST"
-      action="https://script.google.com/macros/s/AKfycbwUekuFNBN2SRCeJgghqj4uYRz3T6kmCbJ2umxecbBivsQAXXgukEbVLEu9GD1y2Kw9/exec"
-      target="hidden_iframe" onsubmit="return handleSubmit();">
-
+    <form id="calcForm">
       <label>姓名</label>
-      <input type="text" name="姓名" required />
+      <input type="text" id="name" required />
 
       <label>電話</label>
-      <input type="text" name="電話" required />
+      <input type="text" id="phone" required />
 
       <label>收入（元）</label>
-      <input type="number" id="income" name="收入" required />
+      <input type="number" id="income" required />
 
       <label>生活開銷（元）</label>
-      <input type="number" id="expense" name="生活開銷" required />
+      <input type="number" id="expense" required />
 
       <label>負債支出（元）</label>
-      <input type="number" id="debt" name="負債" required />
+      <input type="number" id="debt" required />
 
       <label>風險管理支出（元）</label>
-      <input type="number" id="insurance" name="風險管理" required />
+      <input type="number" id="insurance" required />
 
       <label>投資理財支出（元）</label>
-      <input type="number" id="investment" name="投資理財" required />
-
-      <!-- 自動計算欄位 -->
-      <input type="hidden" id="total" name="總支出" />
-      <input type="hidden" id="surplus" name="結餘" />
-      <input type="hidden" id="saving_rate" name="儲蓄率" />
-      <input type="hidden" id="grade" name="評級" />
+      <input type="number" id="investment" required />
 
       <button type="submit">✅ 送出並顯示結果</button>
     </form>
-
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
 
     <div id="result" class="result-box">
       <p id="result_total"></p>
@@ -140,7 +130,11 @@
   </div>
 
   <script>
-    function handleSubmit() {
+    document.getElementById("calcForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
       const income = Number(document.getElementById("income").value) || 0;
       const expense = Number(document.getElementById("expense").value) || 0;
       const debt = Number(document.getElementById("debt").value) || 0;
@@ -156,12 +150,6 @@
       else if (saving_rate >= 10) grade = "B";
       else grade = "C";
 
-      // 填入隱藏欄位
-      document.getElementById("total").value = total;
-      document.getElementById("surplus").value = surplus;
-      document.getElementById("saving_rate").value = saving_rate.toFixed(1) + "%";
-      document.getElementById("grade").value = grade;
-
       // 顯示分析結果
       document.getElementById("result").style.display = "block";
       document.getElementById("result_total").innerText = `💸 總支出：${total.toLocaleString()} 元`;
@@ -169,8 +157,35 @@
       document.getElementById("result_rate").innerText = `📈 儲蓄率：${saving_rate.toFixed(1)}%`;
       document.getElementById("result_grade").innerText = `📣 評級：${grade}`;
 
-      return true; // 讓表單繼續送出
-    }
+      fetch("https://script.google.com/macros/s/AKfycbxve6DfYiwtKo9fCtPPKOFml5JCtfKBm67kH8ljPFS4thW3XCRE8bZP2U_wBXIjJN42/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "budget",
+          name,
+          phone,
+          income,
+          expense,
+          debt,
+          insurance,
+          investment,
+          total,
+          surplus,
+          saving_rate: saving_rate.toFixed(1) + "%",
+          grade
+        })
+      }).then(res => res.json())
+        .then(res => {
+          if (res.result === "success") {
+            document.getElementById("result_grade").innerHTML += "<br>✅ 資料已儲存";
+          } else {
+            document.getElementById("result_grade").innerHTML += "<br>❌ 儲存失敗：" + res.message;
+          }
+        })
+        .catch(err => {
+          document.getElementById("result_grade").innerHTML += "<br>❌ 發生錯誤，請稍後再試";
+        });
+    });
   </script>
 </body>
 </html>

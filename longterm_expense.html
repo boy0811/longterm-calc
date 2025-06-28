@@ -3,172 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>家庭收支分析 × 保險保障建議</title>
+  <title>家庭收支分析 × 保險建議</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 0;
+      background: #f0f4f8;
       color: #333;
+      padding: 20px;
     }
     .container {
       max-width: 720px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin: auto;
+      background: white;
+      padding: 30px;
       border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     h1 {
       text-align: center;
-      margin-bottom: 24px;
+      color: #00695c;
     }
     label {
+      margin-top: 14px;
       display: block;
-      margin-top: 16px;
       font-weight: bold;
     }
-    input[type="text"], input[type="number"] {
+    input {
       width: 100%;
-      padding: 10px;
-      margin-top: 6px;
+      padding: 8px;
+      margin-top: 4px;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
     button {
-      margin-top: 24px;
+      margin-top: 20px;
       padding: 12px;
-      width: 100%;
-      font-size: 16px;
-      background-color: #007b8f;
+      background: #00796b;
       color: white;
       border: none;
-      border-radius: 6px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 8px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #005f6b;
+      background: #004d40;
     }
-    .result {
+    #result {
       margin-top: 30px;
-      font-size: 18px;
-      line-height: 1.6;
-      background: #fff8e1;
+      background: #e0f7fa;
       padding: 20px;
-      border-left: 6px solid #ffc107;
-      border-radius: 10px;
+      border-radius: 8px;
     }
     .footer {
       margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid #ccc;
-      font-size: 16px;
+      font-size: 14px;
+      text-align: center;
+      color: #555;
+    }
+    .line-btn {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📊 家庭收支分析 × 保險建議</h1>
+    <h1>家庭收支分析</h1>
     <form id="budgetForm">
-      <label>姓名</label>
-      <input type="text" id="name" required />
+      <label>姓名 *</label>
+      <input type="text" id="name" required>
 
-      <label>電話</label>
-      <input type="text" id="phone" required />
+      <label>電話 *</label>
+      <input type="text" id="phone" required>
 
-      <label>LINE ID（可免填）</label>
-      <input type="text" id="lineId" />
+      <label>LINE ID（可選填）</label>
+      <input type="text" id="lineId">
 
-      <label>每月收入（元）</label>
-      <input type="number" id="income" required />
+      <label>每月收入（元） *</label>
+      <input type="number" id="income" required>
 
-      <label>生活開銷（元）</label>
-      <input type="number" id="living" required />
+      <label>每月生活開銷（元）</label>
+      <input type="number" id="living">
 
-      <label>債務支出（元）</label>
-      <input type="number" id="debt" required />
+      <label>每月債務支出（元）</label>
+      <input type="number" id="debt">
 
-      <label>風險管理（元，如保險）</label>
-      <input type="number" id="risk" required />
+      <label>每月風險管理支出（保險）（元）</label>
+      <input type="number" id="risk">
 
-      <label>投資理財（元）</label>
-      <input type="number" id="invest" required />
+      <label>每月投資理財支出（元）</label>
+      <input type="number" id="invest">
 
-      <button type="submit">開始試算</button>
+      <button type="submit">試算分析</button>
     </form>
 
-    <div id="result" class="result"></div>
+    <div id="result"></div>
 
     <div class="footer">
-      📞 如需協助規劃保單、財務建議或補助試算，歡迎聯絡我：<br>
-      👤：南山人壽 張又仁<br>
-      ☎ 電話：0927-779-159<br>
-      💬 LINE：@731bpjaj<br>
-      <a href="https://lin.ee/qQa1RAV" target="_blank">
-        <img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="36" border="0">
-      </a>
+      <p>📞 如需協助規劃保單、財務建議或補助試算，歡迎聯絡我：</p>
+      <p>👤 顧問：南山人壽 張又仁<br>
+         ☎ 電話：0927-779-159<br>
+         💬 LINE：@731bpjaj</p>
+      <div class="line-btn">
+        <a href="https://lin.ee/qQa1RAV" target="_blank">
+          <img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="40" border="0">
+        </a>
+      </div>
     </div>
   </div>
 
   <script>
-    function comment(value, target, type) {
-      if (type === 'living') {
-        if (value < 20) return '✅ 精簡實用，良好';
-        if (value <= 40) return '✅ 合理';
-        return '👉 偏高，建議控管';
-      }
-      if (type === 'debt') {
-        if (value === 0) return '✅ 無債務，良好';
-        if (value <= target) return '✅ 可接受';
-        return '👉 偏高';
-      }
-      if (type === 'invest') {
-        if (value === 0) return '👉 尚未配置';
-        if (value < target * 0.8) return '👉 偏低';
-        if (value <= target * 1.2) return '✅ 合理';
-        return '👉 偏高';
-      }
-      if (value === 0) return '👉 尚未配置';
-      if (value < target * 0.8) return '👉 偏低';
-      if (value <= target * 1.2) return '✅ 合理';
-      return '👉 偏高';
-    }
-
     document.getElementById("budgetForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
       const name = document.getElementById("name").value;
       const phone = document.getElementById("phone").value;
       const lineId = document.getElementById("lineId").value;
-      const income = parseFloat(document.getElementById("income").value);
-      const living = parseFloat(document.getElementById("living").value);
-      const debt = parseFloat(document.getElementById("debt").value);
-      const risk = parseFloat(document.getElementById("risk").value);
-      const invest = parseFloat(document.getElementById("invest").value);
+      const income = +document.getElementById("income").value;
+      const living = +document.getElementById("living").value || 0;
+      const debt = +document.getElementById("debt").value || 0;
+      const risk = +document.getElementById("risk").value || 0;
+      const invest = +document.getElementById("invest").value || 0;
+
+      const totalExpense = living + debt + risk + invest;
+      const balance = income - totalExpense;
+      const savingRate = Math.round((balance / income) * 100);
 
       const percentLiving = Math.round((living / income) * 100);
       const percentDebt = Math.round((debt / income) * 100);
       const percentRisk = Math.round((risk / income) * 100);
       const percentInvest = Math.round((invest / income) * 100);
-      const totalExpense = living + debt + risk + invest;
-      const balance = income - totalExpense;
-      const savingRate = Math.round((1 - totalExpense / income) * 100);
-      const grade = savingRate >= 30 ? "A" : savingRate >= 10 ? "B" : "C";
+
+      function comment(actual, target, type) {
+        if (type === "debt") {
+          if (actual === 0) return "👉 ✅ 無債務，良好";
+          if (actual < target) return "👉 ✅ 可接受";
+          return "👉 偏高";
+        }
+        if (type === "invest") {
+          if (actual === 0) return "👉 尚未配置";
+          if (actual < target) return "👉 偏低";
+          return "✅ 合理";
+        }
+        if (type === "living") {
+          if (actual < 20) return "👉 非常節省";
+          if (actual < 40) return "👉 偏低";
+          return "✅ 合理";
+        }
+        // 風險管理
+        if (actual === 0) return "👉 尚未配置";
+        if (actual < target) return "👉 偏低";
+        return "✅ 合理";
+      }
+
+      let grade = "C";
+      if (savingRate >= 30) grade = "A";
+      else if (savingRate >= 15) grade = "B";
 
       let resultHTML = `
-        ✅ 試算完成<br><br>
+        ✅ 試算完成｜📣 評級：${grade}<br><br>
         🙋 姓名：${name}<br>
         📱 電話：${phone}<br>
         ${lineId ? "💬 LINE ID：" + lineId + "<br>" : ""}
         <br>✅ 收入總額：${income.toLocaleString()} 元<br><br>
         🔹 生活開銷：${percentLiving}%（建議 40%）${comment(percentLiving, 40, 'living')}<br>
         🔹 債務支出：${percentDebt}%（建議 20%）${comment(percentDebt, 20, 'debt')}<br>
-        🔹 風險管理：${percentRisk}%（建議 20%）${comment(percentRisk, 20, 'other')}<br>
+        🔹 風險管理：${percentRisk}%（建議 20%）${comment(percentRisk, 20, 'risk')}<br>
         🔹 投資理財：${percentInvest}%（建議 20%）${comment(percentInvest, 20, 'invest')}<br><br>
         💰 剩餘可儲蓄：約 ${balance.toLocaleString()} 元<br>
         💹 儲蓄率：約 ${savingRate}%<br>
-        📣 評級：${grade}
       `;
 
       document.getElementById("result").innerHTML = resultHTML;
@@ -187,7 +192,7 @@
           risk,
           invest,
           balance,
-          savingRate,
+          savingRate: savingRate + "%",
           grade
         })
       });
